@@ -13,6 +13,16 @@ router.get("/", (req, res) => {
     });
 });
 
+router.get("/pending", (req, res) => {
+    PointOfInterest.find({ active: false }).exec((error, pointsOfInterest) => {
+        if (error) {
+            res.status(500).json(error);
+        } else {
+            res.status(200).json(pointsOfInterest);
+        }
+    });
+});
+
 router.post("/", (req, res) => {
     const body = req.body;
     const pointOfInterest = new PointOfInterest({
@@ -58,12 +68,31 @@ router.put("/:id", (req,res) => {
     );
 });
 
+router.put("/:id/publish", (req,res) => {
+    const id = req.params.id;
+    
+    PointOfInterest.findByIdAndUpdate(
+        id, 
+        { $set: { active: true } }, 
+        { new: true, runValidators: true, context: "query" }, // options
+        (error, updatePointOfInterest) => {
+            if (error) {
+                res.status(400).json({ ok: false, error });
+            } else if (!updatePointOfInterest) {
+                res.status(404).json({ ok: false, error: "Point of interest not found"} );
+            } else {
+                res.status(200).json({ ok: true, updatePointOfInterest });
+            }
+        }
+    );
+});
+
 router.delete("/:id", (req,res) => {
     const id = req.params.id;
 
     PointOfInterest.findByIdAndUpdate(
         id, 
-        { active: false }, 
+        { $set: { active: false } }, 
         { new: true, runValidators: true, context: "query" }, // options
         (error, updatePointOfInterest) => {
             if (error) {
