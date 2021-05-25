@@ -4,7 +4,7 @@ const ramda = require("ramda");
 const PointOfInterest = require("../models/pointOfInterest");
 
 router.get("/", (req, res) => {
-    PointOfInterest.find({ active: true }).exec((error, pointsOfInterest) => {
+    PointOfInterest.find({ categories: {"$in": req.query.categories.split(",")}, active: true }).exec((error, pointsOfInterest) => {
         if (error) {
             res.status(500).json(error);
         } else {
