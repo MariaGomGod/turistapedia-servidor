@@ -13,6 +13,21 @@ const linkSchema = new Schema({ // Esquema para subdocumentos de tipo enlace don
     }
 });
 
+const accesibleSchema = new Schema({ // Esquema para subdocumentos de tipo accesibilidad
+    adaptedToilet: {
+        type: Boolean
+    },
+    adaptedAccess: {
+        type: Boolean
+    },
+    adaptedRoom: {
+        type: Boolean
+    },
+    audioGuide: {
+        type: Boolean
+    }
+});
+
 const pointOfInterestSchema = new Schema({
     name: {
         type: String,
@@ -44,8 +59,7 @@ const pointOfInterestSchema = new Schema({
         required: [true, "Longitude is required"] 
     },
     accessible: {
-        type: Boolean,
-        required: [true, "Accessibility is required"] 
+        type: [accesibleSchema] // accesible es un Array de documentos que siguen el esquema accesibleSchema, que utilizaremos para poder filtrar en el mapa
     },
     active: {
         type: Boolean,
