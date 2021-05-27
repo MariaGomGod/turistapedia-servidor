@@ -4,7 +4,18 @@ const ramda = require("ramda");
 const PointOfInterest = require("../models/pointOfInterest");
 
 router.get("/", (req, res) => {
-    PointOfInterest.find({ categories: {"$in": req.query.categories.split(",")}, active: true }).exec((error, pointsOfInterest) => {
+
+    /* MongoDB hace consultas mediante ejemplos. En este caso le estamos pidiendo que nos devuelva documentos similares al que le ofrecemos
+    como primer argumento. */
+
+    PointOfInterest.find({ categories: {"$in": req.query.categories.split(",")}, active: true }).exec((error, pointsOfInterest) => { 
+
+        /* La función find devuelve un objeto de tipo Query. La misma no se ejecutará hasta que no llamemos a su función exec. */
+
+        /* Utilizamos split para separar los string categories y que la petición no te la haga como un solo string. Ejemplo: si no hiciéramos el split
+        y desde el front end seleccionáramos restauración y monumento como categorías, la consulta hacia MongoDB la estaríamos haciendo
+        con un único string "restauración,monumento", lo cual nos daría 0 resultados. */
+
         if (error) {
             res.status(500).json(error);
         } else {
@@ -40,6 +51,9 @@ router.post("/", (req, res) => {
     });
 
     pointOfInterest.save((error, newPointOfInterest) => {
+
+        // save equivale a insert
+
         if (error) {
             res.status(400).json(error);
         } else {
@@ -51,6 +65,7 @@ router.post("/", (req, res) => {
 router.put("/:id", (req,res) => {
     const id = req.params.id;
     const body = ramda.pick(["name", "description", "links", "categories", "photos", "review", "latitude", "logitude", "accessible", "address", "active"], req.body);
+    // Equivalente a const body = { req.body.name, req.body.description, req.body.links, etcétera }
 
     PointOfInterest.findByIdAndUpdate(
         id, 
@@ -92,7 +107,7 @@ router.delete("/:id", (req,res) => {
 
     PointOfInterest.findByIdAndUpdate(
         id, 
-        { $set: { active: false } }, 
+        { $set: { active: false } }, // borrado lógico (no borramos realmente el documento, sino que no le aparece al usuario)
         { new: true, runValidators: true, context: "query" }, // options
         (error, updatePointOfInterest) => {
             if (error) {

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const uniqueValidator = require("mongoose-unique-validator");
 
 const Schema = mongoose.Schema;
 
@@ -65,8 +64,6 @@ const pointOfInterestSchema = new Schema({
         type: Boolean,
         required: [true, "Active is required"] 
     }
-}, { collection: 'pointsOfInterest' }); // Mongoose asume por defecto que la colección se llama igual que el modelo con una 's' detrás, en este caso eso no nos sirve
-
-pointOfInterestSchema.plugin(uniqueValidator, { message: "{PATH} should be unique" });
+}, { collection: 'pointsOfInterest' }); // Mongoose asume por defecto que la colección se llama igual que el modelo con una 's' detrás, en este caso eso no nos sirve. Por tanto, especificamos el nombre de colección real.
 
 module.exports = mongoose.model("PointOfInterest", pointOfInterestSchema);
