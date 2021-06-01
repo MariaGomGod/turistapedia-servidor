@@ -44,11 +44,8 @@ const pointOfInterestSchema = new Schema({
         required: [true, "Category is required"]
     },
     photos: {
-        type: Array
+        type: [linkSchema]
     },
-    /*review: {
-        type: Number
-    },*/
     latitude: {
         type: Number,
         required: [true, "Latitude is required"] 
