@@ -40,8 +40,8 @@ const pointOfInterestSchema = new Schema({
         type: [linkSchema] // links es un Array de documentos que siguen el esquema linkSchema. Impido que el usuario introduzca un enlace mal formado
     },
     categories: {
-        type: Array,
-        required: [true, "Category is required"]
+        type: [String],
+        validate: [v => Array.isArray(v) && v.length > 0, "Category is required"]
     },
     photos: {
         type: [linkSchema]

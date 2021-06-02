@@ -60,6 +60,7 @@ router.get("/pending", (req, res) => {
 
 router.post("/", (req, res) => {
     const body = req.body;
+    const accessible = body.accessible || [];
     const pointOfInterest = new PointOfInterest({
         name: body.name,
         description: body.description,
@@ -69,9 +70,14 @@ router.post("/", (req, res) => {
         review: body.review,
         latitude: body.latitude,
         longitude: body.longitude,
-        accessible: body.accessible,
+        accessible: {
+            adaptedAccess: accessible.includes("adaptedAccess"),
+            adaptedToilet: accessible.includes("adaptedToilet"),
+            adaptedRoom: accessible.includes("adaptedRoom"),
+            audioGuide: accessible.includes("audioGuide")
+        },
         address: body.address,
-        active: true
+        active: false
     });
 
     pointOfInterest.save((error, newPointOfInterest) => {
