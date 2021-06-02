@@ -76,6 +76,10 @@ router.post("/", (req, res) => {
             adaptedRoom: accessible.includes("adaptedRoom"),
             audioGuide: accessible.includes("audioGuide")
         },
+        /* El front end envía un array de strings, mientras que MongoDB espera un objeto compuesto por cuatro propiedades de tipo booleano, donde cada
+        una de seas propiedades es verdadera si el punto de interés soporta esa opción de accesibilidad (por ejemplo, adaptedAccess). La manera de hacer
+        que lo que envía el front end y lo que enspera el back end se adapten, es hacer que cada propiedad del objeto "accessible" sea true si el string
+        correspondiente fue enviado en el array desde el front end (lo que significa que el usuario marcó esa casilla), y falso en caso contrario. */
         address: body.address,
         active: false
     });
