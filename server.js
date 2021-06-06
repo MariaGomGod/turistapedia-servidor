@@ -2,6 +2,8 @@ require("./config/config");
 
 const mongoose = require("mongoose");
 // mongoose.set('debug', true);
+mongoose.set('useFindAndModify', false);
+
 const express = require("express");
 const cors = require("cors"); // para permitir peticiones desde un dominio distinto (localhost:3000 => localhost:8080)
 const app = express();
