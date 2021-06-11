@@ -80,7 +80,6 @@ router.post("/", (req, res) => {
         una de seas propiedades es verdadera si el punto de interés soporta esa opción de accesibilidad (por ejemplo, adaptedAccess). La manera de hacer
         que lo que envía el front end y lo que enspera el back end se adapten, es hacer que cada propiedad del objeto "accessible" sea true si el string
         correspondiente fue enviado en el array desde el front end (lo que significa que el usuario marcó esa casilla), y falso en caso contrario. */
-        address: body.address,
         active: false
     });
 
@@ -98,7 +97,7 @@ router.post("/", (req, res) => {
 
 router.put("/:id", (req, res) => {
     const id = req.params.id;
-    const body = ramda.pick(["name", "description", "links", "categories", "photos", "review", "latitude", "logitude", "accessible", "address", "active"], req.body);
+    const body = ramda.pick(["name", "description", "links", "categories", "photos", "review", "latitude", "logitude", "accessible", "active"], req.body);
     // Equivalente a const body = { req.body.name, req.body.description, req.body.links, etcétera }
 
     PointOfInterest.findByIdAndUpdate(
