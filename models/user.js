@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
 
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
     email: {
         type: String,
-        required: [true, "Email is required"] 
+        required: [true, "Email is required"],
+        unique: true
     },
     password: {
         type: String,
@@ -20,5 +22,7 @@ const userSchema = new Schema({
         required: [true, "Admin is required"]
     }
 });
+
+userSchema.plugin(uniqueValidator, {message: "{PATH} should be unique"});
 
 module.exports = mongoose.model("User", userSchema);
