@@ -25,39 +25,34 @@ router.post("/", (req, res) => {
     });
 });
 
-router.get("/security-question", (req, res) => {
+router.put("/reset-password", (req, res) => {
 
-    const email = req.query.email;
-    const securityQuestion = req.query.securityQuestion;
+    const email = req.body.email;
+    const securityQuestion = req.body.securityQuestion;
 
-    User.find({ email: email, securityQuestion: securityQuestion }).exec((error, user) => {
+    User.find({ email: email, securityQuestion: securityQuestion }).exec((error, users) => {
         if (error) {
             res.status(500).json(error);
-        } else if (!user) {
+        } else if (!users || users.length === 0) {
             res.status(404).json({ ok: false, error: "User not found" });
         } else {
-            res.status(200);
+            User.findByIdAndUpdate(
+                users[0]._id, // al declarar el email único y consultar por email, solo aspiro a recibir un único usuario como respuesta.
+                { $set: { password: req.body.password } },
+                { new: true, runValidators: true, context: "query" }, // options
+                (error, updateUser) => {
+                    if (error) {
+                        res.status(400).json({ ok: false, error });
+                    } else if (!updateUser) {
+                        res.status(404).json({ ok: false, error: "User not found" });
+                    } else {
+                        res.status(200).json({ ok: true, updateUser });
+                    }
+                }
+            );
         }
     });
-});
 
-router.put("/:id/update-password", (req, res) => {
-    const id = req.params.id;
-
-    User.findByIdAndUpdate(
-        id,
-        { $set: { password: req.body.password } },
-        { new: true, runValidators: true, context: "query" }, // options
-        (error, updateUser) => {
-            if (error) {
-                res.status(400).json({ ok: false, error });
-            } else if (!updateUser) {
-                res.status(404).json({ ok: false, error: "User not found" });
-            } else {
-                res.status(200).json({ ok: true, updateUser });
-            }
-        }
-    );
 });
 
 module.exports = router; // exportamos por defecto
