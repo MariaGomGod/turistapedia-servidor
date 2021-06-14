@@ -7,6 +7,8 @@ router.get("/", (req, res) => {
 
     /* MongoDB hace consultas mediante ejemplos. En este caso le estamos pidiendo que nos devuelva documentos similares al que le ofrecemos
     como primer argumento. */
+    const latitude = req.query.latitude || 0;
+    const longitude = req.query.longitude || 0;
     const categories = req.query.categories.split(",");
     const accessible = req.query.accessible.split(",");
 
@@ -29,8 +31,17 @@ router.get("/", (req, res) => {
     }
 
     PointOfInterest.find({
+        location: {
+            $nearSphere: {
+                $geometry: {
+                    type: "Point",
+                    coordinates: [longitude, latitude]
+                },
+                $maxDistance: 1000
+            }
+        },
         categories: { "$in": categories },
-        ... accessibleFilter,
+        ...accessibleFilter,
         active: true
     }).exec((error, pointsOfInterest) => {
 

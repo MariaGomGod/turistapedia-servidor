@@ -27,6 +27,18 @@ const accesibleSchema = new Schema({ // Esquema para subdocumentos de tipo acces
     }
 });
 
+const pointSchema = new Schema({
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
+});
+
 const pointOfInterestSchema = new Schema({
     name: {
         type: String,
@@ -48,13 +60,10 @@ const pointOfInterestSchema = new Schema({
     photos: {
         type: [linkSchema]
     },
-    latitude: {
-        type: Number,
-        required: [true, "Latitude is required"] 
-    },
-    longitude: {
-        type: Number,
-        required: [true, "Longitude is required"] 
+    location: {
+        type: pointSchema,
+        required: true,
+        index: '2dsphere' // El index es para decirle a MongoDB que agilice las consultas que utilicen este campo.
     },
     accessible: {
         type: [accesibleSchema] // accesible es un Array de documentos que siguen el esquema accesibleSchema, que utilizaremos para poder filtrar en el mapa
