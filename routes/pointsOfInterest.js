@@ -2,6 +2,22 @@ const express = require("express");
 const router = express.Router();
 const ramda = require("ramda");
 const PointOfInterest = require("../models/pointOfInterest");
+const jwt = require("jsonwebtoken");
+
+const verifyToken = (req, res, next, requiresAdminAccess) => {
+    const authorizationHeader = req.get("Authorization") || "";
+    const token = authorizationHeader.split(" ")[1]; // "Authorization" tendrá un valor de la forma "Bearer <token>".
+    jwt.verify(token, process.env.SEED, (error, payload) => {
+         // payload tiene la forma { "user": { "email": "blabla", "password": "blabla", "securityQuestion": "blabla", "admin" : false|true }}
+        if (error) {
+            res.status(401).json(error);
+        } else if (requiresAdminAccess && !payload.user.admin) {
+            res.status(403).json({ "message": "Forbidden" });
+        } else {
+            next(); // llama a la siguiente pieza de middleware
+        }
+    });
+};
 
 router.get("/", (req, res) => {
 
@@ -59,7 +75,7 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/pending", (req, res) => {
+router.get("/pending", (req, res, next) => verifyToken(req, res, next, true), (req, res) => {
     PointOfInterest.find({ active: false }).exec((error, pointsOfInterest) => {
         if (error) {
             res.status(500).json(error);
@@ -69,7 +85,7 @@ router.get("/pending", (req, res) => {
     });
 });
 
-router.post("/", (req, res) => {
+router.post("/", (req, res, next) => verifyToken(req, res, next, false), (req, res) => {
     const body = req.body;
     const accessible = body.accessible || [];
     const pointOfInterest = new PointOfInterest({
@@ -79,8 +95,7 @@ router.post("/", (req, res) => {
         categories: body.categories,
         photos: body.photos,
         review: body.review,
-        latitude: body.latitude,
-        longitude: body.longitude,
+        location: body.location,
         accessible: {
             adaptedAccess: accessible.includes("adaptedAccess"),
             adaptedToilet: accessible.includes("adaptedToilet"),
@@ -106,7 +121,7 @@ router.post("/", (req, res) => {
     });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", (req, res, next) => verifyToken(req, res, next, false), (req, res) => {
     const id = req.params.id;
     const body = ramda.pick(["name", "description", "links", "categories", "photos", "review", "latitude", "logitude", "accessible", "active"], req.body);
     // Equivalente a const body = { req.body.name, req.body.description, req.body.links, etcétera }
@@ -127,7 +142,7 @@ router.put("/:id", (req, res) => {
     );
 });
 
-router.put("/:id/publish", (req, res) => {
+router.put("/:id/publish", (req, res, next) => verifyToken(req, res, next, true), (req, res) => {
     const id = req.params.id;
 
     PointOfInterest.findByIdAndUpdate(
@@ -146,7 +161,7 @@ router.put("/:id/publish", (req, res) => {
     );
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", (req, res, next) => verifyToken(req, res, next, true), (req, res) => {
     const id = req.params.id;
 
     PointOfInterest.findByIdAndUpdate(
