@@ -62,7 +62,7 @@ router.put("/reset-password", (req, res) => {
         } else {
             User.findByIdAndUpdate(
                 users[0]._id, // al declarar el email único y consultar por email, solo aspiro a recibir un único usuario como respuesta.
-                { $set: { password: req.body.password } },
+                { $set: { password: bcrypt.hashSync(req.body.password, 10) } },
                 { new: true, runValidators: true, context: "query" }, // options
                 (error, updateUser) => {
                     if (error) {
