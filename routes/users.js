@@ -15,7 +15,7 @@ router.post("/", (req, res) => {
 
     user.save((error, newUser) => {
 
-        // save equivale a insert
+        // save() equivale a insert
 
         if (error) {
             res.status(400).json(error);

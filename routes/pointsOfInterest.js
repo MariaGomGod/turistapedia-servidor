@@ -94,7 +94,6 @@ router.post("/", (req, res, next) => verifyToken(req, res, next, false), (req, r
         links: body.links,
         categories: body.categories,
         photos: body.photos,
-        review: body.review,
         location: body.location,
         accessible: {
             adaptedAccess: accessible.includes("adaptedAccess"),
@@ -104,14 +103,14 @@ router.post("/", (req, res, next) => verifyToken(req, res, next, false), (req, r
         },
         /* El front end envía un array de strings, mientras que MongoDB espera un objeto compuesto por cuatro propiedades de tipo booleano, donde cada
         una de seas propiedades es verdadera si el punto de interés soporta esa opción de accesibilidad (por ejemplo, adaptedAccess). La manera de hacer
-        que lo que envía el front end y lo que enspera el back end se adapten, es hacer que cada propiedad del objeto "accessible" sea true si el string
+        que lo que envía el front end y lo que espera el back end se adapten, es hacer que cada propiedad del objeto "accessible" sea true si el string
         correspondiente fue enviado en el array desde el front end (lo que significa que el usuario marcó esa casilla), y falso en caso contrario. */
         active: false
     });
 
     pointOfInterest.save((error, newPointOfInterest) => {
 
-        // save equivale a insert
+        // save() equivale a insert
 
         if (error) {
             res.status(400).json(error);
@@ -123,7 +122,7 @@ router.post("/", (req, res, next) => verifyToken(req, res, next, false), (req, r
 
 router.put("/:id", (req, res, next) => verifyToken(req, res, next, false), (req, res) => {
     const id = req.params.id;
-    const body = ramda.pick(["name", "description", "links", "categories", "photos", "review", "latitude", "logitude", "accessible", "active"], req.body);
+    const body = ramda.pick(["name", "description", "links", "categories", "photos", "location", "accessible", "active"], req.body);
     // Equivalente a const body = { req.body.name, req.body.description, req.body.links, etcétera }
 
     PointOfInterest.findByIdAndUpdate(
