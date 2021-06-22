@@ -33,7 +33,7 @@ router.post("/login", (req, res) => {
             res.status(500).json(error);
         } else if (user && bcrypt.compareSync(body.password, user.password)) {
             const token = jwt.sign(
-                {user: user}, // payload (el contenido que se quiere firmar)
+                {user: user}, // payload (el contenido que se quiere firmar o encriptar)
                 process.env.SEED,
                 {expiresIn: 1800}
             );

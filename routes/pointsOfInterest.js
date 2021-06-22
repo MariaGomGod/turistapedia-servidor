@@ -85,6 +85,29 @@ router.get("/pending", (req, res, next) => verifyToken(req, res, next, true), (r
     });
 });
 
+router.get("/all", (req, res, next) => verifyToken(req, res, next, true), (req, res) => {
+    PointOfInterest.find({}).exec((error, pointsOfInterest) => {
+        if (error) {
+            res.status(500).json(error);
+        } else {
+            res.status(200).json(pointsOfInterest);
+        }
+    });
+});
+
+router.get("/:id", (req, res, next) => verifyToken(req, res, next, true), (req, res) => {
+    const id = req.params.id;
+    PointOfInterest.findOne({_id: id}).exec((error, pointOfInterest) => {
+        if (error) {
+            res.status(500).json(error);
+        } else if (!pointOfInterest) {
+            res.status(404).json({ ok: false, error: "Point of interest not found" });
+        } else {
+            res.status(200).json(pointOfInterest);
+        }
+    });
+});
+
 router.post("/", (req, res, next) => verifyToken(req, res, next, false), (req, res) => {
     const body = req.body;
     const accessible = body.accessible || [];

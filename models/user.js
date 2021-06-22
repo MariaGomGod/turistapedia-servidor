@@ -18,8 +18,7 @@ const userSchema = new Schema({
         required: [true, "Security question is required"]
     },
     admin: {
-        type: Boolean,
-        required: [true, "Admin is required"]
+        type: Boolean
     }
 });
 

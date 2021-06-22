@@ -53,7 +53,7 @@ const pointOfInterestSchema = new Schema({
     },
     categories: {
         type: [String],
-        validate: [v => Array.isArray(v) && v.length > 0, "Category is required"] 
+        validate: [categoriesValue => Array.isArray(categoriesValue) && categoriesValue.length > 0, "Category is required"] 
         // En mongoose 5, required no comprueba que el array no esté vacío, solo que el campo sea una array.
         // Con esta función se comprueba que el campo es de tipo array y que no está vacío.
     },
