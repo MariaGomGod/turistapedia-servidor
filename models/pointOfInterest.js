@@ -66,7 +66,7 @@ const pointOfInterestSchema = new Schema({
         index: '2dsphere' // El index es para decirle a MongoDB que agilice las consultas que utilicen este campo.
     },
     accessible: {
-        type: [accesibleSchema] // accesible es un Array de documentos que siguen el esquema accesibleSchema, que utilizaremos para poder filtrar en el mapa
+        type: accesibleSchema // accesible es un documento que sigue el esquema accesibleSchema, que utilizaremos para poder filtrar en el mapa
     },
     active: {
         type: Boolean,
