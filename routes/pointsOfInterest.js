@@ -183,12 +183,12 @@ router.put("/:id/publish", (req, res, next) => verifyToken(req, res, next, true)
     );
 });
 
-router.delete("/:id", (req, res, next) => verifyToken(req, res, next, true), (req, res) => {
+router.put("/:id/unpublish", (req, res, next) => verifyToken(req, res, next, true), (req, res) => {
     const id = req.params.id;
 
     PointOfInterest.findByIdAndUpdate(
         id,
-        { $set: { active: false } }, // borrado lógico (no borramos realmente el documento, sino que no le aparece al usuario)
+        { $set: { active: false } }, 
         { new: true, runValidators: true, context: "query" }, // options
         (error, updatePointOfInterest) => {
             if (error) {
@@ -197,6 +197,21 @@ router.delete("/:id", (req, res, next) => verifyToken(req, res, next, true), (re
                 res.status(404).json({ ok: false, error: "Point of interest not found" });
             } else {
                 res.status(200).json({ ok: true, updatePointOfInterest });
+            }
+        }
+    );
+});
+
+router.delete("/:id", (req, res, next) => verifyToken(req, res, next, true), (req, res) => {
+    const id = req.params.id;
+
+    PointOfInterest.remove(
+        { "_id": id },
+        (error) => {
+            if (error) {
+                res.status(400).json({ ok: false, error });
+            } else {
+                res.status(200).json({ ok: true });
             }
         }
     );
