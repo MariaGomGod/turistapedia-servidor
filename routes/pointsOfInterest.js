@@ -205,7 +205,7 @@ router.put("/:id/unpublish", (req, res, next) => verifyToken(req, res, next, tru
 router.delete("/:id", (req, res, next) => verifyToken(req, res, next, true), (req, res) => {
     const id = req.params.id;
 
-    PointOfInterest.remove(
+    PointOfInterest.deleteOne(
         { "_id": id },
         (error) => {
             if (error) {
