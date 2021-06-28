@@ -35,7 +35,7 @@ router.post("/login", (req, res) => {
             const token = jwt.sign(
                 {user: user}, // payload (el contenido que se quiere firmar o encriptar)
                 process.env.SEED,
-                {expiresIn: 1800}
+                {expiresIn: "24h"}
             );
             res.status(200).json({token: token, user: { email: user.email, admin: user.admin }});
         } else {
