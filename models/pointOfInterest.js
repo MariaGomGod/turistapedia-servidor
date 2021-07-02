@@ -71,7 +71,16 @@ const pointOfInterestSchema = new Schema({
     active: {
         type: Boolean,
         required: [true, "Active is required"] 
+    },
+    author: {
+        type: String,
+        required: [true, "Author is required"] 
+    },
+    updatedAt: {
+        type: Date,
+        required: [true, "UpdatedAt is required"] 
     }
+
 }, { collection: 'pointsOfInterest' }); // Mongoose asume por defecto que la colección se llama igual que el modelo con una 's' detrás, en este caso eso no nos sirve. Por tanto, especificamos el nombre de colección real.
 
 module.exports = mongoose.model("PointOfInterest", pointOfInterestSchema);

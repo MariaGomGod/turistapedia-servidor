@@ -14,6 +14,8 @@ const verifyToken = (req, res, next, requiresAdminAccess) => {
         } else if (requiresAdminAccess && !payload.user.admin) {
             res.status(403).json({ "message": "Forbidden" });
         } else {
+            req.headers['author'] = payload.user.email; // Con esto informamos a los middleware que se ejecuten a continuación quién es el usuario que 
+                                                        // está intentando ejecutar esta operación, mediante una cabecera "author" que contiene el e-mail
             next(); // llama a la siguiente pieza de middleware
         }
     });
@@ -123,7 +125,9 @@ router.post("/", (req, res, next) => verifyToken(req, res, next, false), (req, r
         una de seas propiedades es verdadera si el punto de interés soporta esa opción de accesibilidad (por ejemplo, adaptedAccess). La manera de hacer
         que lo que envía el front end y lo que espera el back end se adapten, es hacer que cada propiedad del objeto "accessible" sea true si el string
         correspondiente fue enviado en el array desde el front end (lo que significa que el usuario marcó esa casilla), y falso en caso contrario. */
-        active: false
+        active: false,
+        updatedAt: new Date(),
+        author: req.get("author")
     });
 
     pointOfInterest.save((error, newPointOfInterest) => {
@@ -142,6 +146,7 @@ router.put("/:id", (req, res, next) => verifyToken(req, res, next, false), (req,
     const id = req.params.id;
     const body = ramda.pick(["name", "description", "links", "categories", "photos", "location", "accessible", "active"], req.body);
     // Equivalente a const body = { req.body.name, req.body.description, req.body.links, etcétera }
+    body.updatedAt = new Date();
 
     PointOfInterest.findByIdAndUpdate(
         id,
@@ -164,7 +169,7 @@ router.put("/:id/publish", (req, res, next) => verifyToken(req, res, next, true)
 
     PointOfInterest.findByIdAndUpdate(
         id,
-        { $set: { active: true } },
+        { $set: { active: true, updatedAt: new Date() } },
         { new: true, runValidators: true, context: "query" }, // options
         (error, updatePointOfInterest) => {
             if (error) {
@@ -183,7 +188,7 @@ router.put("/:id/unpublish", (req, res, next) => verifyToken(req, res, next, tru
 
     PointOfInterest.findByIdAndUpdate(
         id,
-        { $set: { active: false } }, 
+        { $set: { active: false, updatedAt: new Date() } }, 
         { new: true, runValidators: true, context: "query" }, // options
         (error, updatePointOfInterest) => {
             if (error) {
