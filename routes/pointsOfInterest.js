@@ -110,7 +110,7 @@ router.get("/:id", (req, res, next) => verifyToken(req, res, next, true), (req, 
 
 router.post("/", (req, res, next) => verifyToken(req, res, next, false), (req, res) => {
     const body = req.body;
-    const accessible = body.accessible || [];
+    const accessible = body.accessible || {};
     const pointOfInterest = new PointOfInterest({
         name: body.name,
         description: body.description,
@@ -118,12 +118,7 @@ router.post("/", (req, res, next) => verifyToken(req, res, next, false), (req, r
         categories: body.categories,
         photos: body.photos,
         location: body.location,
-        accessible: {
-            adaptedAccess: accessible.includes("adaptedAccess"),
-            adaptedToilet: accessible.includes("adaptedToilet"),
-            adaptedRoom: accessible.includes("adaptedRoom"),
-            audioGuide: accessible.includes("audioGuide")
-        },
+        accessible: ramda.pick(["adaptedAccess", "adaptedToilet", "adaptedRoom", "audioGuide"], accessible),
         /* El front end envía un array de strings, mientras que MongoDB espera un objeto compuesto por cuatro propiedades de tipo booleano, donde cada
         una de seas propiedades es verdadera si el punto de interés soporta esa opción de accesibilidad (por ejemplo, adaptedAccess). La manera de hacer
         que lo que envía el front end y lo que espera el back end se adapten, es hacer que cada propiedad del objeto "accessible" sea true si el string
