@@ -156,13 +156,6 @@ router.put("/:id", (req, res, next) => verifyToken(req, res, next, false), (req,
                 res.status(400).json({ ok: false, error });
             } else if (!updatePointOfInterest) {
                 res.status(404).json({ ok: false, error: "Point of interest not found" });
-            } else if (!req.get('admin') && req.get('author') !== pointOfInterest.author) {
-                // Con esto impedimos que un usuario que no es el autor de un punto de interés
-                // lo modifique, aunque ya le estemos impidiendo llamar al endpoint GET /:id para 
-                // obtener el detalle del mismo (perfectamente podría enviar un JSON inventado, le
-                // bastaría con conocer el ID del punto de interés para intentar modificarlo
-                // llamando directamente al endpoint PUT /:id)
-                res.status(403).json({ ok: false, error: "Forbidden" });
             } else {
                 res.status(200).json({ ok: true, updatePointOfInterest });
             }
