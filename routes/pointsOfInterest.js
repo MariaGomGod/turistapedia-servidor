@@ -136,7 +136,7 @@ router.post("/", (req, res, next) => verifyToken(req, res, next, false), (req, r
         if (error) {
             res.status(400).json(error);
         } else {
-            res.status(200).json(newPointOfInterest);
+            res.status(201).header('Location', `http://localhost:8080/poi/${newPointOfInterest._id}`).json(newPointOfInterest);
         }
     });
 });
